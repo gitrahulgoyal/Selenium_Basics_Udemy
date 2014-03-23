@@ -5,11 +5,17 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
+<<<<<<< HEAD
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.matchers.JUnitMatchers.containsString;
+=======
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+>>>>>>> 24aef8a069dcdc20962c5543cec9e83949b67c91
 
 public class DriverInterrogateRefactoredTest {
 
@@ -31,7 +37,11 @@ public class DriverInterrogateRefactoredTest {
 
         assertThat(driver.getTitle(), is("Basic Web Page Title"));
         assertThat(driver.getCurrentUrl(), is(theTestPageURL));
+<<<<<<< HEAD
         assertThat(driver.getPageSource(), containsString("A paragraph of text"));
+=======
+        //assertThat(driver.getPageSource(), containsString("A paragraph of text"));
+>>>>>>> 24aef8a069dcdc20962c5543cec9e83949b67c91
     }
 
     @AfterClass

@@ -1,8 +1,11 @@
 package com.seleniumsimplified.webdriver.userinteractions;
 
 import com.seleniumsimplified.webdriver.manager.Driver;
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 24aef8a069dcdc20962c5543cec9e83949b67c91
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ComparisonFailure;
@@ -15,16 +18,23 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+<<<<<<< HEAD
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
 import static org.hamcrest.core.Is.is;
+=======
+>>>>>>> 24aef8a069dcdc20962c5543cec9e83949b67c91
 import static org.junit.Assert.*;
 
 public class UserInteractionsExercisesTest {
 
     private static WebDriver driver;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 24aef8a069dcdc20962c5543cec9e83949b67c91
     @BeforeClass
     public static void setup(){
         driver = Driver.get("http://compendiumdev.co.uk/selenium/" +
