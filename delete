@@ -1,0 +1,94 @@
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredentials;
+import com.google.api.client.util.Base64;
+import io.kubernetes.client.openapi.ApiClient;
+import io.kubernetes.client.openapi.Configuration;
+import io.kubernetes.client.openapi.models.*;
+import io.kubernetes.client.openapi.models.V1Config;
+import io.kubernetes.client.util.Config;
+import io.kubernetes.client.util.KubeConfig;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+
+public class KubeConfigExample {
+    public static void main(String[] args) throws IOException {
+        // Obtain Google Cloud credentials
+        GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+
+        // Obtain Kubernetes API client
+        ApiClient apiClient = Config.defaultClient();
+        Configuration.setDefaultApiClient(apiClient);
+
+        // Obtain Kubernetes configuration object
+        V1Config config = new V1Config();
+        config.setApiVersion("v1");
+        config.setKind("Config");
+
+        // Create cluster object
+        V1Cluster cluster = new V1Cluster();
+        cluster.setName("my-cluster");
+
+        V1ObjectMeta clusterMetadata = new V1ObjectMeta();
+        clusterMetadata.setName("my-cluster");
+        cluster.setMetadata(clusterMetadata);
+
+        V1ClusterSpec clusterSpec = new V1ClusterSpec();
+        clusterSpec.setCertificateAuthorityData(Base64.encodeBase64String(apiClient.getHttpClient().getCertBytes()));
+        clusterSpec.setServer(apiClient.getBasePath());
+        cluster.setSpec(clusterSpec);
+
+        // Create user object
+        V1User user = new V1User();
+        user.setName("my-user");
+
+        V1ObjectMeta userMetadata = new V1ObjectMeta();
+        userMetadata.setName("my-user");
+        user.setMetadata(userMetadata);
+
+        V1AuthProvider authProvider = new V1AuthProvider();
+        authProvider.setName("gcp");
+
+        V1AuthProviderConfig authProviderConfig = new V1AuthProviderConfig();
+        authProviderConfig.setAccessToken(new V1AccessToken().setToken(credentials.getAccessToken().getTokenValue()));
+        authProviderConfig.setAuthProvider(new V1AuthProvider().setName("gcp"));
+        authProvider.setConfig(authProviderConfig);
+
+        V1ExecConfig execConfig = new V1ExecConfig();
+        execConfig.setCommand("gcloud");
+        execConfig.setArgs(List.of("config", "config-helper", "--format=json", "--configuration=default"));
+
+        V1ExecCredential execCredential = new V1ExecCredential();
+        execCredential.setAuthProvider(authProvider);
+        execCredential.setExec(execConfig);
+
+        user.setExec(execCredential);
+
+        // Create context object
+        V1NamedContext context = new V1NamedContext();
+        context.setName("my-context");
+
+        V1ObjectMeta contextMetadata = new V1ObjectMeta();
+        contextMetadata.setName("my-context");
+        context.setMetadata(contextMetadata);
+
+        V1Context contextSpec = new V1Context();
+        contextSpec.setCluster("my-cluster");
+        contextSpec.setUser("my-user");
+        contextSpec.setNamespace("my-namespace");
+        context.setContext(contextSpec);
+
+        // Add cluster, user, and context objects to configuration
+        config.setClusters(List.of(cluster));
+        config.setUsers(List.of(user));
+        config.setContexts(List.of(context));
+        config.setCurrentContext("my-context");
+
+        // Serialize configuration to YAML
+        KubeConfig kubeConfig = KubeConfig.create(config);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+        kubeConfig.write(writer);
+        writer.flush();
+        String kubeConfigYaml = outputStream.toString(StandardCharsets.UTF
